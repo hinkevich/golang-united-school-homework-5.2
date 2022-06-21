@@ -1,30 +1,38 @@
 package cache
 
-import "time"
+import (
+	"time"
+)
 
 type Notice struct {
-	key      string
-	notice   string
-	lifeTime time.Time
+	notice      string
+	lifeTimeEnd time.Time
 }
 
 type Cache struct {
-	cacheNotices []Notice
+	cachemap map[string]Notice
 }
 
 func NewCache() Cache {
 	var result Cache
-	result.cacheNotices = make([]Notice, 0)
+	result.cachemap = make(map[string]Notice)
 	return result
 }
 
 func (c Cache) Get(key string) (string, bool) {
-	if c.cacheNotices == nil {
+	if c.cachemap == nil {
 		return "", false
 	}
-	for _, notice := range c.cacheNotices {
-		if notice.key == key && notice.lifeTime.After(time.Now()) {
-			return notice.notice, true
+
+	for keyMap, msg := range c.cachemap {
+		if keyMap == key {
+			if msg.lifeTimeEnd.After(time.Now()) {
+				return msg.notice, true
+			} else {
+				delete(c.cachemap, key)
+				return "", false
+			}
+
 		}
 
 	}
@@ -32,57 +40,18 @@ func (c Cache) Get(key string) (string, bool) {
 }
 
 func (c *Cache) Put(key, value string) {
-	if c == nil {
-		c.cacheNotices = append(c.cacheNotices, Notice{key, value, time.Now().Add(time.Hour)})
-		return
-	}
-	for i := 0; i < len(c.cacheNotices); i++ {
-		if c.cacheNotices[i].key == key {
-			c.cacheNotices[i].notice = value
-			c.cacheNotices[i].lifeTime = time.Now().Add(time.Hour)
-			return
-		}
-	}
-
-	// for _, notice := range c.cacheNotices {
-	// 	if notice.key == key {
-	// 		notice.notice = value
-	// 		notice.lifeTime.Add(time.Hour)
-	// 		return
-	// 	}
-	//}
-	c.cacheNotices = append(c.cacheNotices, Notice{key, value, time.Now().Add(time.Hour)})
+	c.cachemap[key] = Notice{notice: value, lifeTimeEnd: time.Now().Add(time.Hour)}
 }
 
 func (c Cache) Keys() []string {
 
 	var resultarray []string
-	for _, notice := range c.cacheNotices {
-		resultarray = append(resultarray, notice.key)
+	for key := range c.cachemap {
+		resultarray = append(resultarray, key)
 	}
 	return resultarray
 }
 
 func (c *Cache) PutTill(key, value string, deadline time.Time) {
-	if c == nil {
-		c.cacheNotices = append(c.cacheNotices, Notice{key, value, time.Now().Add(time.Hour)})
-		return
-	}
-	for i := 0; i < len(c.cacheNotices); i++ {
-		if c.cacheNotices[i].key == key {
-			c.cacheNotices[i].notice = value
-			c.cacheNotices[i].lifeTime = deadline
-			return
-		}
-	}
-
-	// for _, notice := range c.cacheNotices {
-	// 	if notice.key == key {
-	// 		notice.notice = value
-	// 		notice.lifeTime.Add(time.Hour)
-	// 		return
-	// 	}
-	//}
-	c.cacheNotices = append(c.cacheNotices, Notice{key, value, time.Now().Add(time.Hour)})
-
+	c.cachemap[key] = Notice{notice: value, lifeTimeEnd: deadline}
 }

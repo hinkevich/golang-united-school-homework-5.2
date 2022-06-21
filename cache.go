@@ -7,11 +7,16 @@ type Cache struct {
 }
 
 func NewCache() Cache {
+	var result Cache
+	result.m = make(map[string]string)
 
-	return Cache{}
+	return result
 }
 
 func (c Cache) Get(key string) (string, bool) {
+	if c.m == nil {
+		return "", false
+	}
 	for k, _ := range c.m {
 		if k == key {
 			return key, true

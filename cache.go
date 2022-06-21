@@ -36,13 +36,20 @@ func (c *Cache) Put(key, value string) {
 		c.cacheNotices = append(c.cacheNotices, Notice{key, value, time.Now().Add(time.Hour)})
 		return
 	}
-	for _, notice := range c.cacheNotices {
-		if notice.key == key {
-			notice.notice = value
-			notice.lifeTime.Add(time.Hour)
+	for i := 0; i < len(c.cacheNotices); i++ {
+		if c.cacheNotices[i].key == key {
+			c.cacheNotices[i].notice = value
 			return
 		}
 	}
+
+	// for _, notice := range c.cacheNotices {
+	// 	if notice.key == key {
+	// 		notice.notice = value
+	// 		notice.lifeTime.Add(time.Hour)
+	// 		return
+	// 	}
+	//}
 	c.cacheNotices = append(c.cacheNotices, Notice{key, value, time.Now().Add(time.Hour)})
 }
 

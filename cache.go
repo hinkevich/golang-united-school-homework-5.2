@@ -2,24 +2,29 @@ package cache
 
 import "time"
 
+type Notice struct {
+	key      string
+	notice   string
+	lifeTime time.Time
+}
+
 type Cache struct {
-	m map[string]string
+	cacheNotices []Notice
 }
 
 func NewCache() Cache {
 	var result Cache
-	result.m = make(map[string]string)
-
+	result.cacheNotices = make([]Notice, 0)
 	return result
 }
 
 func (c Cache) Get(key string) (string, bool) {
-	if c.m == nil {
+	if c.cacheNotices == nil {
 		return "", false
 	}
-	for k, v := range c.m {
-		if k == key {
-			return v, true
+	for _, notice := range c.cacheNotices {
+		if notice.key == key {
+			return notice.notice, true
 		}
 
 	}
@@ -27,20 +32,18 @@ func (c Cache) Get(key string) (string, bool) {
 }
 
 func (c *Cache) Put(key, value string) {
-	c.m[key] = value
+	c.cacheNotices = append(c.cacheNotices, Notice{key, value, time.Now()})
 }
 
 func (c Cache) Keys() []string {
 
 	var resultarray []string
-	for key, _ := range c.m {
-		resultarray = append(resultarray, key)
+	for _, notice := range c.cacheNotices {
+		resultarray = append(resultarray, notice.key)
 	}
 	return resultarray
 }
 
 func (c *Cache) PutTill(key, value string, deadline time.Time) {
-	if deadline.After(time.Now()) {
-		c.Put(key, value)
-	}
+
 }

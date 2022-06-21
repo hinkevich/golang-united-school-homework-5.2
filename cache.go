@@ -14,7 +14,7 @@ type Cache struct {
 
 func NewCache() Cache {
 	var result Cache
-	//result.cacheNotices := make([]Notice)
+	result.cacheNotices = make([]Notice, 1)
 
 	return result
 }
@@ -33,17 +33,18 @@ func (c Cache) Get(key string) (string, bool) {
 }
 
 func (c *Cache) Put(key, value string) {
-	c.m[key] = value
+	c.cacheNotices = append(c.cacheNotices, Notice{key, value, time.Now()})
 }
 
 func (c Cache) Keys() []string {
 
 	var resultarray []string
-	for key, _ := range c.m {
-		resultarray = append(resultarray, key)
+	for _, notice := range c.cacheNotices {
+		resultarray = append(resultarray, notice.key)
 	}
 	return resultarray
 }
 
 func (c Cache) PutTill(key, value string, deadline time.Time) {
+
 }

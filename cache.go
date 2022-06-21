@@ -32,18 +32,18 @@ func (c Cache) Get(key string) (string, bool) {
 }
 
 func (c *Cache) Put(key, value string) {
-	checkAdd := false
+	if c == nil {
+		c.cacheNotices = append(c.cacheNotices, Notice{key, value, time.Now().Add(time.Hour)})
+		return
+	}
 	for _, notice := range c.cacheNotices {
 		if notice.key == key {
 			notice.notice = value
 			notice.lifeTime.Add(time.Hour)
-			checkAdd = true
-			break
+			return
 		}
 	}
-	if !checkAdd {
-		c.cacheNotices = append(c.cacheNotices, Notice{key, value, time.Now().Add(time.Hour)})
-	}
+	c.cacheNotices = append(c.cacheNotices, Notice{key, value, time.Now().Add(time.Hour)})
 }
 
 func (c Cache) Keys() []string {

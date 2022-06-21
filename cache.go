@@ -17,9 +17,9 @@ func (c Cache) Get(key string) (string, bool) {
 	if c.m == nil {
 		return "", false
 	}
-	for k, _ := range c.m {
+	for k, v := range c.m {
 		if k == key {
-			return key, true
+			return v, true
 		}
 
 	}

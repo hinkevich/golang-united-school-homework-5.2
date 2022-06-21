@@ -23,7 +23,7 @@ func (c Cache) Get(key string) (string, bool) {
 		return "", false
 	}
 	for _, notice := range c.cacheNotices {
-		if notice.key == key {
+		if notice.key == key && notice.lifeTime.After(time.Now()) {
 			return notice.notice, true
 		}
 
@@ -32,7 +32,7 @@ func (c Cache) Get(key string) (string, bool) {
 }
 
 func (c *Cache) Put(key, value string) {
-	c.cacheNotices = append(c.cacheNotices, Notice{key, value, time.Now()})
+	c.cacheNotices = append(c.cacheNotices, Notice{key, value, time.Now().Add(time.Hour)})
 }
 
 func (c Cache) Keys() []string {

@@ -2,24 +2,30 @@ package cache
 
 import "time"
 
+type Notice struct {
+	key      string
+	notice   string
+	lifeTime time.Time
+}
+
 type Cache struct {
-	m map[string]string
+	cacheNotices []Notice
 }
 
 func NewCache() Cache {
 	var result Cache
-	result.m = make(map[string]string)
+	//result.cacheNotices := make([]Notice)
 
 	return result
 }
 
 func (c Cache) Get(key string) (string, bool) {
-	if c.m == nil {
+	if c.cacheNotices == nil {
 		return "", false
 	}
-	for k, v := range c.m {
-		if k == key {
-			return v, true
+	for _, notice := range c.cacheNotices {
+		if notice.key == key {
+			return notice.notice, true
 		}
 
 	}

@@ -39,6 +39,7 @@ func (c *Cache) Put(key, value string) {
 	for i := 0; i < len(c.cacheNotices); i++ {
 		if c.cacheNotices[i].key == key {
 			c.cacheNotices[i].notice = value
+			c.cacheNotices[i].lifeTime = time.Now().Add(time.Hour)
 			return
 		}
 	}
@@ -63,5 +64,25 @@ func (c Cache) Keys() []string {
 }
 
 func (c *Cache) PutTill(key, value string, deadline time.Time) {
+	if c == nil {
+		c.cacheNotices = append(c.cacheNotices, Notice{key, value, time.Now().Add(time.Hour)})
+		return
+	}
+	for i := 0; i < len(c.cacheNotices); i++ {
+		if c.cacheNotices[i].key == key {
+			c.cacheNotices[i].notice = value
+			c.cacheNotices[i].lifeTime = deadline
+			return
+		}
+	}
+
+	// for _, notice := range c.cacheNotices {
+	// 	if notice.key == key {
+	// 		notice.notice = value
+	// 		notice.lifeTime.Add(time.Hour)
+	// 		return
+	// 	}
+	//}
+	c.cacheNotices = append(c.cacheNotices, Notice{key, value, time.Now().Add(time.Hour)})
 
 }

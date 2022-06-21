@@ -3,21 +3,36 @@ package cache
 import "time"
 
 type Cache struct {
+	m map[string]string
 }
 
 func NewCache() Cache {
+
 	return Cache{}
 }
 
-func (receiver) Get(key string) (string, bool) {
+func (c Cache) Get(key string) (string, bool) {
+	for k, _ := range c.m {
+		if k == key {
+			return key, true
+		}
 
+	}
+	return "", false
 }
 
-func (receiver) Put(key, value string) {
+func (c *Cache) Put(key, value string) {
+	c.m[key] = value
 }
 
-func (receiver) Keys() []string {
+func (c Cache) Keys() []string {
+
+	var resultarray []string
+	for key, _ := range c.m {
+		resultarray = append(resultarray, key)
+	}
+	return resultarray
 }
 
-func (receiver) PutTill(key, value string, deadline time.Time) {
+func (c Cache) PutTill(key, value string, deadline time.Time) {
 }
